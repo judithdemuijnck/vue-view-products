@@ -2,12 +2,15 @@
   <article class="product-preview">
     <!-- how can I destructure props here? -->
     <h4 v-if="isLoading">Loading...</h4>
-    <img :src="product.images[0]" @load="isLoading = false" />
-    <h3 class="product-category">{{ product.category }}</h3>
-    <h2>{{ product.title }}</h2>
-    <p>{{ product.description }}</p>
-    <h3 class="product-price">£{{ product.price }}</h3>
-    <p>{{ product.stock }} left in stock...</p>
+    <img :src="images[0]" @load="isLoading = false" />
+
+    <h3 class="product-category">{{ category }}</h3>
+
+    <h2>{{ title }}</h2>
+    <p>{{ description }}</p>
+
+    <h3 class="product-price">£{{ price }}</h3>
+    <p>{{ stock }} left in stock...</p>
   </article>
 </template>
 
@@ -20,15 +23,18 @@ export default {
     };
   },
   props: {
-    product: {
-      id: Number,
-      title: String,
-      description: String,
-      price: Number,
-      category: String,
-      stock: Number,
-      images: [String], // is this the correct way of declaring an array of strings here? in TS it would be string[] or Array<string>, which is not accepted by eslint
-    },
+    id: { type: Number },
+    title: { type: String },
+    description: { type: String },
+    price: { type: Number },
+    category: { type: String },
+    stock: { type: Number },
+    images: {
+      type: Array,
+      default() {
+        return [];
+      },
+    }, // is this the correct way of declaring an array of strings here? in TS it would be string[] or Array<string>, which is not accepted by eslint
   },
 };
 </script>
