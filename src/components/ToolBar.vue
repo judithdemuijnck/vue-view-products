@@ -1,5 +1,9 @@
 <template>
   <form @submit.prevent class="tool-bar">
+
+    <!-- in this instance v-model shouldn't be used as we're propagating multiple values back out to the parent component, it can be done but it is not the cleanest solution  -->
+
+    <!-- v-model="searchInput" removed -->
     <div class="tool-item">
       <label for="search">
         <input
@@ -7,7 +11,7 @@
           name="search"
           type="text"
           class="search-input"
-          v-model="searchInput"
+          :value="search"
           @input="handleSearch"
           placeholder="Search products..."
         />
@@ -16,7 +20,10 @@
 
     <div class="tool-item">
       <label for="sort-by"><b>Sort by: </b></label>
-      <select id="sort-by" name="sort-by" v-model="sortBy" @change="handleSort">
+
+      <!-- v-model="sortBy" removed -->
+
+      <select id="sort-by" name="sort-by" :value="sort" @change="handleSort">
         <option value="title">Title</option>
         <option value="category">Category</option>
         <option value="price">Price</option>
@@ -26,6 +33,9 @@
 
     <div class="tool-item">
       <label for="filter-by"><b>Filter By: </b></label>
+
+      <!-- v-model="filterBy" removed -->
+
       <select
         id="filter-by"
         name="filter-by"
@@ -50,6 +60,7 @@ import axios from "axios";
 
 export default {
   name: "ToolBar",
+
   data() {
     return {
       searchInput: "",
@@ -58,19 +69,64 @@ export default {
       filterBy: "all",
     };
   },
+
+  // the above should be declared as props enabling the ability to
+  // pass in values to be declared in the template.
+
+  props: {
+    search: {
+      type: String,
+      default: "",
+    },
+    sort: {
+      type: String,
+      default: "title",
+    },
+    category: {
+      type: String,
+      default: "all",
+    },
+    categories: {
+      type: Array,
+      default() {
+        return [];
+      }
+    }
+  },
+
+
   async created() {
+
+    // check if there is custom categories passed in then default to calling fetch categories
+    // if (this.categories.lenth === 0) {
+    //   const items = await this.fetchCategories();
+    //   this.$emit("update:categories", items);
+    // }
+
     this.allCategories = await this.fetchCategories();
   },
   methods: {
-    handleSearch() {
+    handleSearch(e) {
+      // causes `search` prop to update
+      this.$emit("update:search", e.target.value);
+
       this.$emit("search-products", this.searchInput);
     },
-    handleSort() {
+    handleSort(e) {
+      // causes `sort` prop to update
+      this.$emit("update:sort", e.target.value);
+
       this.$emit("sort-products", this.sortBy);
+
     },
-    handleFilter() {
+    handleFilter(e) {
+      // causes `category` prop to update
+      this.$emit("update:category", e.target.value);
+
       this.$emit("filter-products", this.filterBy);
     },
+
+    // should be declared in action.js file
     async fetchCategories() {
       try {
         const data = await axios.get(
