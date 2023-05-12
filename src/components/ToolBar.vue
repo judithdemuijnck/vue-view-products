@@ -2,12 +2,13 @@
   <form @submit.prevent class="tool-bar">
     <div class="tool-item">
       <label for="search">
+        <!-- had to go back to v-model because  -->
         <input
           id="search"
           name="search"
           type="text"
           class="search-input"
-          v-model="searchInput"
+          v-model="search"
           @input="handleSearch"
           placeholder="Search products..."
         />
@@ -16,7 +17,8 @@
 
     <div class="tool-item">
       <label for="sort-by"><b>Sort by: </b></label>
-      <select id="sort-by" name="sort-by" v-model="sortBy" @change="handleSort">
+      <select id="sort-by" name="sort-by" v-model="sort" @change="handleSort">
+        <option value="--">--</option>
         <option value="title">Title</option>
         <option value="category">Category</option>
         <option value="price">Price</option>
@@ -29,7 +31,7 @@
       <select
         id="filter-by"
         name="filter-by"
-        v-model="filterBy"
+        v-model="currentCategory"
         @change="handleFilter"
       >
         <option value="all">All Categories</option>
@@ -52,10 +54,11 @@ export default {
   name: "ToolBar",
   data() {
     return {
-      searchInput: "",
-      sortBy: "title",
+      search: "",
+      sort: "--",
+      currentCategory: "all",
+      // searchInput: "",
       allCategories: [],
-      filterBy: "all",
     };
   },
   async created() {
@@ -63,13 +66,13 @@ export default {
   },
   methods: {
     handleSearch() {
-      this.$emit("search-products", this.searchInput);
+      this.$emit("search-products", this.search);
     },
     handleSort() {
-      this.$emit("sort-products", this.sortBy);
+      this.$emit("sort-products", this.sort);
     },
     handleFilter() {
-      this.$emit("filter-products", this.filterBy);
+      this.$emit("filter-products", this.currentCategory);
     },
     async fetchCategories() {
       try {
